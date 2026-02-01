@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Valentine 💘</title>
+
+<style>
+  body {
+    margin: 0;
+    height: 100vh;
+    font-family: 'Comic Sans MS', cursive;
+    background: radial-gradient(circle, #ff4d6d, #b5179e);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+    color: white;
+  }
+
+  .screen {
+    text-align: center;
+    display: none;
+    padding: 20px;
+  }
+  .active { display: block; }
+
+  /* INTRO */
+  .intro {
+    position: fixed;
+    inset: 0;
+    background: linear-gradient(135deg, #2b0f1c, #5a1a2f);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 10;
+    cursor: pointer;
+  }
+  .envelope {
+    font-size: 120px;
+    animation: float 2.5s ease-in-out infinite;
+  }
+  .intro-text {
+    margin-top: 15px;
+    font-size: 1.2em;
+  }
+  @keyframes float {
+    50% { transform: translateY(-15px); }
+  }
+
+  /* QUESTION */
+  h1 {
+    font-size: 2.2em;
+    min-height: 90px;
+  }
+
+  .buttons {
+    position: relative;
+    height: 160px;
+    margin-top: 20px;
+  }
+
+  button {
+    padding: 15px 35px;
+    font-size: 18px;
+    border-radius: 30px;
+    border: none;
+    cursor: pointer;
+  }
+
+  #yes {
+    background: white;
+    color: #ff2e63;
+    font-weight: bold;
+    animation: pulse 1.4s infinite;
+  }
+
+  #no {
+    position: absolute;
+    left: 140px;
+    background: #222;
+    color: white;
+  }
+
+  #tries {
+    margin-top: 10px;
+    font-size: 1em;
+    opacity: 0.8;
+  }
+
+  /* HEART */
+  .heart {
+    font-size: 120px;
+    animation: heartBeat 1.2s infinite;
+    cursor: pointer;
+  }
+
+  /* LETTER */
+  .letter {
+    max-width: 420px;
+    background: rgba(255,255,255,0.12);
+    backdrop-filter: blur(10px);
+    padding: 30px;
+    border-radius: 20px;
+    font-size: 1.2em;
+    line-height: 1.7;
+    animation: fadeUp 2s ease;
+  }
+
+  /* EFFECTS */
+  .spark {
+    position: fixed;
+    font-size: 20px;
+    animation: spark 1s linear forwards;
+  }
+
+  @keyframes spark {
+    to { opacity: 0; transform: scale(2); }
+  }
+  @keyframes pulse {
+    50% { transform: scale(1.1); }
+  }
+  @keyframes heartBeat {
+    50% { transform: scale(1.2); }
+  }
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(30px); }
+  }
+</style>
+</head>
+
+<body>
+
+<!-- MUSIC (YOUR SPECIAL SONG) -->
+<audio id="bgMusic" loop>
+  <source src="every-breath-you-take.mp3" type="audio/mpeg">
+</audio>
+
+<!-- SCREAM -->
+<audio id="scream">
+  <source src="https://www.myinstants.com/media/sounds/wilhelm-scream.mp3">
+</audio>
+
+<!-- INTRO -->
+<div class="intro" id="intro">
+  <div>
+    <div class="envelope">💌</div>
+    <div class="intro-text">You have a letter…<br>Tap to open</div>
+  </div>
+</div>
+
+<!-- SCREEN 1 -->
+<div class="screen active" id="screen1">
+  <h1 id="question"></h1>
+
+  <div class="buttons">
+    <button id="yes">Yes 💘</button>
+    <button id="no">No 😢</button>
+  </div>
+
+  <div id="tries"></div>
+</div>
+
+<!-- SCREEN 2 -->
+<div class="screen" id="screen2">
+  <div class="heart" id="heart">💖</div>
+  <p>Tap the heart</p>
+</div>
+
+<!-- SCREEN 3 -->
+<div class="screen" id="screen3">
+  <div class="letter" id="letter"></div>
+</div>
+
+<script>
+  const intro = document.getElementById("intro");
+  const bgMusic = document.getElementById("bgMusic");
+  const scream = document.getElementById("scream");
+
+  const questionText = "Ishwari 💖 Will you be my Valentine?";
+  const letterText =
+`I don’t know when it happened,
+but I remember your eyes,your smile.
+
+At Atigre’s Lake,
+they held something calm,
+deep, and beautiful.
+
+For a moment my heart forgets how to beat,
+and the next it races,but kept hearing your heart beating like the waves off the shore —
+every time I look into your eyes.
+
+I admired them quietly,
+the way one admires something rare,
+hoping I’d never forget that feeling.I know sometimes i act and behave cringe but.....`;
+
+  let qi = 0, li = 0, tries = 0;
+
+  intro.onclick = () => {
+    intro.style.display = "none";
+
+    // FAIL-PROOF MUSIC START
+    const playPromise = bgMusic.play();
+    if (playPromise !== undefined) {
+      playPromise.then(() => {
+        bgMusic.volume = 0.45;
+      }).catch(() => {
+        alert("Click anywhere again to start the music 🎵");
+      });
+    }
+
+    typeQuestion();
+  };
+
+  function typeQuestion() {
+    if (qi < questionText.length) {
+      document.getElementById("question").innerHTML += questionText.charAt(qi++);
+      setTimeout(typeQuestion, 70);
+    }
+  }
+
+  const noBtn = document.getElementById("no");
+  noBtn.onmouseover = () => {
+    tries++;
+    document.getElementById("tries").innerText = `Trying NO ${tries} times 😏`;
+    scream.currentTime = 0;
+    scream.play();
+    noBtn.style.transform =
+      `translate(${Math.random()*300-150}px, ${Math.random()*150-75}px)`;
+  };
+
+  document.getElementById("yes").onclick = () => {
+    document.getElementById("screen1").classList.remove("active");
+    document.getElementById("screen2").classList.add("active");
+  };
+
+  document.getElementById("heart").onclick = () => {
+    explode();
+    document.getElementById("screen2").classList.remove("active");
+    document.getElementById("screen3").classList.add("active");
+    typeLetter();
+  };
+
+  function typeLetter() {
+    if (li < letterText.length) {
+      document.getElementById("letter").innerHTML += letterText.charAt(li++);
+      setTimeout(typeLetter, 55);
+    }
+  }
+
+  function explode() {
+    for (let i = 0; i < 30; i++) {
+      const s = document.createElement("div");
+      s.className = "spark";
+      s.innerText = "✨";
+      s.style.left = Math.random() * window.innerWidth + "px";
+      s.style.top = Math.random() * window.innerHeight + "px";
+      document.body.appendChild(s);
+      setTimeout(() => s.remove(), 1000);
+    }
+  }
+</script>
+
+</body>
+</html>
